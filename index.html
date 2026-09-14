@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#f5f4f0" />
+  <meta name="description" content="个人杯套收藏馆 - 收藏、整理、记录每一只喜欢的杯套。" />
+  <title>杯套收藏馆</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="status-time" id="statusTime">8:51</div>
+      <div class="topbar-title">杯套收藏馆</div>
+      <button class="mini-menu" id="menuButton" aria-label="打开快捷菜单"><span></span><span></span><span></span></button>
+    </header>
+
+    <main class="main-content">
+      <section class="view active" id="homeView" aria-label="首页">
+        <div class="home-intro">
+          <div>
+            <p class="eyebrow">CUP SLEEVE COLLECTION <span>·</span></p>
+            <h1>把喜欢的杯套，<br /><em>好好收藏。</em></h1>
+          </div>
+          <div class="collection-total"><strong id="totalCount">0</strong><span>件收藏</span></div>
+        </div>
+        <div class="notice-card">
+          <div class="notice-icon">✦</div>
+          <div><strong>只属于你的收藏馆</strong><span>数据保存在当前浏览器，不上传服务器</span></div>
+          <button class="notice-action" id="backupButton">备份</button>
+        </div>
+        <div class="toolbar">
+          <button class="select-control" id="brandFilterButton">全部品牌 <span>⌄</span></button>
+          <label class="search-box"><span class="search-icon"></span><input id="searchInput" type="search" placeholder="搜索杯套名称..." /></label>
+        </div>
+        <div class="active-filter" id="activeFilter" hidden></div>
+        <div id="collectionList"></div>
+      </section>
+
+      <section class="view" id="rankingView" aria-label="贡献榜">
+        <div class="page-heading"><p class="eyebrow">YOUR COLLECTION</p><h1>贡献榜</h1><p>记录每一个让收藏馆变丰富的人。</p></div>
+        <div class="profile-card"><div class="profile-avatar">藏</div><div><strong>我的收藏档案</strong><span id="profileStats">已收藏 0 件 · 上传 0 件</span></div><button class="ghost-button" id="editProfile">编辑</button></div>
+        <div class="rank-card"><div class="section-title"><h2>本馆贡献者</h2><span>按收录数量</span></div><div id="rankingList"></div></div>
+        <div class="tip-card"><span class="tip-mark">i</span><p>这是你的私人收藏馆，贡献榜只在这台设备上展示。</p></div>
+      </section>
+
+      <section class="view" id="uploadView" aria-label="上传杯套">
+        <div class="page-heading upload-heading"><p class="eyebrow">ADD TO ARCHIVE</p><h1>上传杯套</h1><p>记录一只杯套，也记录一段当时的心情。</p></div>
+        <form class="upload-form" id="uploadForm">
+          <label>杯套名称 <b>*</b><input id="sleeveName" required placeholder="例如：线条小狗联名款" /></label>
+          <label>贡献人昵称 <small>（选填）</small><input id="contributor" placeholder="例如：小粉" /></label>
+          <label>品牌 <b>*</b><select id="brandInput" required><option value="">请选择品牌</option><option>瑞幸咖啡</option><option>喜茶</option><option>星巴克</option><option>MINISO</option><option>其他品牌</option></select></label>
+          <label>发行时间 <b>*</b><input id="dateInput" type="date" required /></label>
+          <label>类型标签<select id="tagInput"><option>联名限定</option><option>常规款</option><option>节日限定</option><option>城市限定</option></select></label>
+          <label>发行故事 <small>（选填）</small><textarea id="storyInput" rows="4" placeholder="记录这枚杯套背后的故事……"></textarea></label>
+          <label>杯套图片 <b>*</b><div class="image-picker" id="imagePicker"><input id="imageInput" type="file" accept="image/*" /><div class="upload-icon">＋</div><strong>点击选择图片</strong><span>建议使用清晰的正面照片</span><img id="imagePreview" alt="图片预览" hidden /></div></label>
+          <button class="primary-button submit-button" type="submit">确认上传 <span>→</span></button>
+          <button class="feedback-button" type="button" id="feedbackButton">有问题或建议？ <u>点这里反馈</u></button>
+        </form>
+      </section>
+
+      <section class="view" id="favoritesView" aria-label="收藏">
+        <div class="page-heading favorite-heading"><p class="eyebrow">MY FAVORITES</p><h1>杯套收藏</h1><p>把最喜欢的那些，单独留一页。</p></div>
+        <div class="favorite-summary"><strong id="favoriteCount">0</strong><span>枚心动收藏</span><button id="clearFavorites">清空收藏</button></div>
+        <div id="favoritesList"></div>
+      </section>
+    </main>
+
+    <nav class="bottom-nav" aria-label="主导航">
+      <button class="nav-item active" data-view="homeView"><span class="nav-icon home-icon"></span><small>首页</small></button>
+      <button class="nav-item" data-view="rankingView"><span class="nav-icon crown-icon"></span><small>贡献榜</small></button>
+      <button class="nav-item upload-nav" data-view="uploadView"><span class="nav-icon plus-icon">＋</span><small>上传</small></button>
+      <button class="nav-item" data-view="favoritesView"><span class="nav-icon heart-icon"></span><small>收藏</small></button>
+    </nav>
+  </div>
+
+  <div class="modal-backdrop" id="brandModal" hidden>
+    <div class="bottom-sheet" role="dialog" aria-modal="true" aria-labelledby="brandModalTitle">
+      <div class="sheet-handle"></div><h2 id="brandModalTitle">全部品牌</h2><div class="brand-options" id="brandOptions"></div><div class="sheet-actions"><button class="cancel-button" id="cancelBrand">取消</button><button class="confirm-button" id="confirmBrand">确定</button></div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="detailModal" hidden>
+    <div class="detail-sheet" role="dialog" aria-modal="true"><button class="close-detail" id="closeDetail" aria-label="关闭">×</button><div id="detailContent"></div></div>
+  </div>
+  <div class="toast" id="toast" role="status"></div>
+  <script src="app.js"></script>
+</body>
+</html>
