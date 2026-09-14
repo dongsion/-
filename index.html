@@ -39,10 +39,10 @@
       </section>
 
       <section class="view" id="frameView" aria-label="相框">
-        <div class="page-heading"><p class="eyebrow">FRAME STUDIO</p><h1>杯套相框</h1><p>把上传的杯套拖进相框，自由摆放成一面墙。</p></div>
+        <div class="page-heading"><p class="eyebrow">FRAME STUDIO</p><h1>杯套相框</h1><p>上传的杯套会平铺成一面墙，点格子可更换。</p></div>
         <div class="frame-toolbar"><button class="ghost-button" id="frameExport">导出图片</button><button class="ghost-button danger" id="frameClear">清空相框</button></div>
         <div class="frame-stage" id="frameStage" aria-label="相框画布"><div class="frame-hint" id="frameHint">点击下方杯套，把它放进相框</div></div>
-        <div class="tip-card frame-tip"><span class="tip-mark">i</span><p>拖动可移动杯套，选中后可缩放、旋转或移除，布局会自动保存。</p></div>
+        <div class="tip-card frame-tip"><span class="tip-mark">i</span><p>点击下方杯套加入相框，点击相框里的格子可更换或移除，布局会自动保存。</p></div>
         <div class="frame-tray-wrap"><div class="section-title"><h2>我的杯套</h2><span>点击加入相框</span></div><div class="frame-tray" id="frameTray"></div></div>
       </section>
 
@@ -84,6 +84,12 @@
 
   <div class="modal-backdrop" id="detailModal" hidden>
     <div class="detail-sheet" role="dialog" aria-modal="true"><button class="close-detail" id="closeDetail" aria-label="关闭">×</button><div id="detailContent"></div></div>
+  </div>
+
+  <div class="modal-backdrop" id="framePickerModal" hidden>
+    <div class="bottom-sheet" role="dialog" aria-modal="true" aria-labelledby="framePickerTitle">
+      <div class="sheet-handle"></div><h2 id="framePickerTitle">选择这个位置的杯套</h2><div class="frame-picker-options" id="framePickerOptions"></div><div class="sheet-actions"><button class="cancel-button" id="framePickerRemove">移除这个位置</button><button class="confirm-button" id="framePickerClose">取消</button></div>
+    </div>
   </div>
   <div class="toast" id="toast" role="status"></div>
   <script src="app.js"></script>
