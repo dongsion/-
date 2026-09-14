@@ -1,11 +1,10 @@
 const STORAGE_KEY = "cup-sleeve-archive-v2";
 const FAVORITES_KEY = "cup-sleeve-favorites-v2";
 const FRAME_KEY = "cup-sleeve-frame-v1";
-const FRAME_COUNT = 24;
 
-function mulberry32(seed) { return function () { seed |= 0; seed = (seed + 0x6D2B79F5) | 0; let value = Math.imul(seed ^ (seed >>> 15), 1 | seed); value = (value + Math.imul(value ^ (value >>> 7), 61 | value)) ^ value; return ((value ^ (value >>> 14)) >>> 0) / 4294967296; }; }
-function buildFrameTemplate() { const rand = mulberry32(20260914); const rects = [{ x: 0, y: 0, w: 1, h: 1 }]; while (rects.length < FRAME_COUNT) { let pick = 0; let best = -1; rects.forEach((rect, index) => { const weight = rect.w * rect.h * (0.45 + rand() * 0.55); if (weight > best) { best = weight; pick = index; } }); const rect = rects.splice(pick, 1)[0]; const ratio = 0.34 + rand() * 0.32; if (rect.w >= rect.h) { rects.push({ x: rect.x, y: rect.y, w: rect.w * ratio, h: rect.h }, { x: rect.x + rect.w * ratio, y: rect.y, w: rect.w * (1 - ratio), h: rect.h }); } else { rects.push({ x: rect.x, y: rect.y, w: rect.w, h: rect.h * ratio }, { x: rect.x, y: rect.y + rect.h * ratio, w: rect.w, h: rect.h * (1 - ratio) }); } } return rects.map((rect) => { const nx = rect.x + rect.w / 2; const ny = rect.y + rect.h / 2; const tangent = (Math.atan2(ny - 1.35, nx - 0.5) * 180) / Math.PI + 90; return { x: rect.x * 100, y: rect.y * 100, w: rect.w * 100, h: rect.h * 100, rot: tangent * 0.3 + (rand() * 2 - 1) * 4, scale: 1.14 + rand() * 0.05 }; }); }
+function buildFrameTemplate() { const W = 4; const H = 3; const cx = W / 2; const cy = H + 3.2; const thickness = 0.55; const radiusStart = cy - H; const radiusMax = Math.hypot(W / 2, cy); const rows = Math.round((radiusMax - radiusStart) / thickness); const tileWidth = thickness * 1.95; const tiles = []; for (let row = 0; row < rows; row++) { const radius = radiusStart + thickness * (row + 0.5); const half = Math.asin(Math.min(1, W / 2 / radius)); const count = Math.max(2, Math.round((2 * half * radius) / tileWidth)); for (let index = 0; index < count; index++) { const alpha = -half + (2 * half * (index + 0.5)) / count; const centerX = cx + radius * Math.sin(alpha); const centerY = cy - radius * Math.cos(alpha); if (centerX < -0.4 || centerX > W + 0.4 || centerY < -0.4 || centerY > H + 0.4) continue; tiles.push({ x: ((centerX - tileWidth / 2) / W) * 100, y: ((centerY - thickness / 2) / H) * 100, w: (tileWidth / W) * 100, h: (thickness / H) * 100, rot: (alpha * 180) / Math.PI, scale: 1.08 }); } } return tiles; }
 const FRAME_TEMPLATE = buildFrameTemplate();
+const FRAME_COUNT = FRAME_TEMPLATE.length;
 
 const defaultSleeves = [];
 
