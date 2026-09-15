@@ -19,31 +19,36 @@
   <body>
     <main>
       <h1>杯套扇形相框</h1>
-      <p>黑色相框、白色背景。每张杯套 <code>left:0; bottom:0</code>，旋转基点统一为左下角 <code>transform-origin:left bottom</code>，只改变 <code>rotate</code>，从约 12° 逐渐增加到约 72°，形成以左下角为圆心的扇形放射布局。</p>
+      <p>黑色相框、白色背景。每张杯套 <code>left:0; bottom:0</code>，旋转基点统一为左下角 <code>transform-origin:left bottom</code>，只改变 <code>rotate</code>（约 -4° 到 95°），并沿半径方向分 4 圈层叠 <code>translateX</code>，从右上近水平逐渐倾斜到左下最斜，形成贴满整框的扇形放射结构。</p>
       <div class="frame">
         <div class="stage" id="stage"></div>
       </div>
     </main>
     <script>
       const stage = document.getElementById("stage");
-      const count = 16;
-      const start = 12;
-      const end = 72;
-      const length = 84;
-      const thick = 20;
-      for (let i = 0; i < count; i += 1) {
-        const ratio = count > 1 ? i / (count - 1) : 0;
-        const angle = start + ratio * (end - start);
-        const strip = document.createElement("div");
-        strip.className = "strip";
-        strip.style.width = `${length}%`;
-        strip.style.height = `${thick}%`;
-        strip.style.transformOrigin = "left bottom";
-        strip.style.transform = `rotate(${-angle}deg)`;
-        strip.style.zIndex = i;
-        strip.style.background = `linear-gradient(90deg, hsl(${(i * 24) % 360} 72% 84%), hsl(${(i * 24 + 34) % 360} 70% 66%))`;
-        strip.textContent = `${angle.toFixed(0)}°`;
-        stage.appendChild(strip);
+      const rings = 4;
+      const ringStep = 20;
+      const length = 70;
+      const thick = 30;
+      const start = -4;
+      const end = 95;
+      const step = 9;
+      let index = 0;
+      for (let ring = 0; ring < rings; ring += 1) {
+        const shift = (ring * ringStep * 100) / length;
+        for (let angle = start; angle <= end + 1e-6; angle += step) {
+          const strip = document.createElement("div");
+          strip.className = "strip";
+          strip.style.width = `${length}%`;
+          strip.style.height = `${thick}%`;
+          strip.style.transformOrigin = "left bottom";
+          strip.style.transform = `rotate(${-angle}deg) translateX(${shift}%)`;
+          strip.style.zIndex = index;
+          strip.style.background = `linear-gradient(90deg, hsl(${(index * 24) % 360} 72% 84%), hsl(${(index * 24 + 34) % 360} 70% 66%))`;
+          strip.textContent = `${angle.toFixed(0)}°`;
+          stage.appendChild(strip);
+          index += 1;
+        }
       }
     </script>
   </body>
