@@ -19,36 +19,46 @@
   <body>
     <main>
       <h1>杯套扇形相框</h1>
-      <p>黑色相框、白色背景。每张杯套 <code>left:0; bottom:0</code>，旋转基点统一为左下角 <code>transform-origin:left bottom</code>，只改变 <code>rotate</code>（约 -4° 到 95°），并沿半径方向分 4 圈层叠 <code>translateX</code>，从右上近水平逐渐倾斜到左下最斜，形成贴满整框的扇形放射结构。</p>
+      <p>黑色相框、白色背景。每张杯套 <code>left:0; bottom:0</code>，旋转基点统一为左下角 <code>transform-origin:left bottom</code>，只改变 <code>rotate</code>，并沿半径方向多层排布 <code>translate</code>。杯套长边沿扇弧切向贴合，从右上近水平逐渐倾斜到左下最斜，形成贴满整框的扇形结构。</p>
       <div class="frame">
         <div class="stage" id="stage"></div>
       </div>
     </main>
     <script>
       const stage = document.getElementById("stage");
-      const rings = 4;
-      const ringStep = 20;
-      const length = 70;
-      const thick = 30;
-      const start = -4;
-      const end = 95;
-      const step = 9;
+      const W = 4;
+      const H = 3;
+      const length = 1.7;
+      const thick = 0.72;
+      const start = -100;
+      const end = 10;
+      const overlap = 0.78;
+      const radiusStart = 0.45;
+      const radiusEnd = 7;
+      const radiusStep = 0.66;
+      const span = ((end - start) * Math.PI) / 180;
       let index = 0;
-      for (let ring = 0; ring < rings; ring += 1) {
-        const shift = (ring * ringStep * 100) / length;
-        for (let angle = start; angle <= end + 1e-6; angle += step) {
+      let ring = 0;
+      for (let radius = radiusStart; radius <= radiusEnd + 1e-6; radius += radiusStep) {
+        const count = Math.max(1, Math.round((radius * span) / (length * overlap)));
+        const offset = ring % 2 ? 0.5 : 0;
+        for (let k = 0; k < count; k += 1) {
+          const phi = ((start * Math.PI) / 180) + ((k + offset) / count) * span;
+          const rot = (phi * 180) / Math.PI + 90;
+          const depth = (-(radius - thick / 2) / thick) * 100;
           const strip = document.createElement("div");
           strip.className = "strip";
-          strip.style.width = `${length}%`;
-          strip.style.height = `${thick}%`;
+          strip.style.width = `${(length / W) * 100}%`;
+          strip.style.height = `${(thick / H) * 100}%`;
           strip.style.transformOrigin = "left bottom";
-          strip.style.transform = `rotate(${-angle}deg) translateX(${shift}%)`;
+          strip.style.transform = `rotate(${rot}deg) translate(-50%, ${depth}%)`;
           strip.style.zIndex = index;
           strip.style.background = `linear-gradient(90deg, hsl(${(index * 24) % 360} 72% 84%), hsl(${(index * 24 + 34) % 360} 70% 66%))`;
-          strip.textContent = `${angle.toFixed(0)}°`;
+          strip.textContent = `${rot.toFixed(0)}°`;
           stage.appendChild(strip);
           index += 1;
         }
+        ring += 1;
       }
     </script>
   </body>
