@@ -19,7 +19,7 @@
   <body>
     <main>
       <h1>杯套扇形相框</h1>
-      <p>黑色相框、白色背景。每张杯套 <code>left:0; bottom:0</code>，旋转基点统一为左下角 <code>transform-origin:left bottom</code>，只改变 <code>rotate</code>，并沿半径方向多层排布 <code>translate</code>。杯套长边沿扇弧切向贴合，从右上近水平逐渐倾斜到左下最斜，形成贴满整框的扇形结构。</p>
+      <p>黑色相框、白色背景。每张杯套 <code>left:0; bottom:0</code>，旋转基点统一为左下角 <code>transform-origin:left bottom</code>，并沿半径方向多层排布。每张按所在扇环裁成扇形格子（<code>clip-path</code>），一圈之内左右边紧贴、环与环之间弧线相接，整框被铺满且互不交叠。</p>
       <div class="frame">
         <div class="stage" id="stage"></div>
       </div>
@@ -32,33 +32,41 @@
       const thick = 0.7;
       const start = -100;
       const end = 10;
-      const overlap = 1;
-      const radiusStart = thick / 2;
       const radiusEnd = 7;
-      const radiusStep = thick;
       const span = ((end - start) * Math.PI) / 180;
+      function rotatePoint(x, y, deg) { const r = (deg * Math.PI) / 180; const c = Math.cos(r); const s = Math.sin(r); return [x * c - y * s, x * s + y * c]; }
       let index = 0;
-      let ring = 0;
-      for (let radius = radiusStart; radius <= radiusEnd + 1e-6; radius += radiusStep) {
-        const count = Math.max(1, Math.round((radius * span) / (length * overlap)));
-        const offset = ring % 2 ? 0.5 : 0;
+      for (let radius = thick / 2; radius <= radiusEnd + 1e-6; radius += thick) {
+        const count = Math.max(2, Math.round((radius * span) / length));
+        const step = span / count;
         for (let k = 0; k < count; k += 1) {
-          const phi = ((start * Math.PI) / 180) + ((k + offset) / count) * span;
-          const rot = (phi * 180) / Math.PI + 90;
-          const depth = (-(radius - thick / 2) / thick) * 100;
+          const a0 = ((start * Math.PI) / 180) + k * step;
+          const rot = ((a0 + step / 2) * 180) / Math.PI + 90;
+          const rIn = radius - thick / 2;
+          const rOut = radius + thick / 2;
+          const seg = Math.max(2, Math.ceil(step / 0.05));
+          const points = [];
+          for (let i = 0; i <= seg; i += 1) { const a = a0 + (step * i) / seg; points.push([rIn * Math.cos(a), rIn * Math.sin(a)]); }
+          for (let i = seg; i >= 0; i -= 1) { const a = a0 + (step * i) / seg; points.push([rOut * Math.cos(a), rOut * Math.sin(a)]); }
+          const local = points.map((point) => rotatePoint(point[0], point[1], -rot));
+          const minX = Math.min(...local.map((p) => p[0]));
+          const maxX = Math.max(...local.map((p) => p[0]));
+          const minY = Math.min(...local.map((p) => p[1]));
+          const maxY = Math.max(...local.map((p) => p[1]));
+          const width = maxX - minX;
+          const height = maxY - minY;
           const strip = document.createElement("div");
           strip.className = "strip";
-          strip.style.width = `${(length / W) * 100}%`;
-          strip.style.height = `${(thick / H) * 100}%`;
+          strip.style.width = `${(width / W) * 100}%`;
+          strip.style.height = `${(height / H) * 100}%`;
           strip.style.transformOrigin = "left bottom";
-          strip.style.transform = `rotate(${rot}deg) translate(-50%, ${depth}%)`;
+          strip.style.transform = `rotate(${rot}deg) translate(${(minX / width) * 100}%, ${(maxY / height) * 100}%)`;
+          strip.style.clipPath = `polygon(${local.map((p) => `${(((p[0] - minX) / width) * 100).toFixed(3)}% ${(((p[1] - minY) / height) * 100).toFixed(3)}%`).join(",")})`;
           strip.style.zIndex = index;
           strip.style.background = `linear-gradient(90deg, hsl(${(index * 24) % 360} 72% 84%), hsl(${(index * 24 + 34) % 360} 70% 66%))`;
-          strip.textContent = `${rot.toFixed(0)}°`;
           stage.appendChild(strip);
           index += 1;
         }
-        ring += 1;
       }
     </script>
   </body>
